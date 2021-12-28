@@ -1,55 +1,37 @@
-FROM openjdk:17.0.1-jdk-bullseye
+FROM alpine:3.14
 
-RUN apt-get update \
-  && apt-get install git curl -y
+RUN echo 'hosts: files dns' >> /etc/nsswitch.conf
+RUN apk add --no-cache iputils ca-certificates net-snmp-tools procps lm_sensors tzdata su-exec libcap && \
+    update-ca-certificates
 
-WORKDIR /build
+ENV TELEGRAF_VERSION 1.19.3
 
-RUN curl -L "https://www.mirrorservice.org/sites/ftp.apache.org/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.zip" --output maven.zip \
-  && unzip maven.zip \
-  && git clone --depth=1 --progress --verbose https://github.com/questdb/questdb.git
+RUN set -ex && \
+    mkdir ~/.gnupg; \
+    echo "disable-ipv6" >> ~/.gnupg/dirmngr.conf; \
+    apk add --no-cache --virtual .build-deps wget gnupg tar && \
+    for key in \
+        05CE15085FC09D18E99EFB22684A14CF2582E0C5 ; \
+    do \
+        gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys "$key" ; \
+    done && \
+    wget --no-verbose https://dl.influxdata.com/telegraf/releases/telegraf-${TELEGRAF_VERSION}_static_linux_amd64.tar.gz.asc && \
+    wget --no-verbose https://dl.influxdata.com/telegraf/releases/telegraf-${TELEGRAF_VERSION}_static_linux_amd64.tar.gz && \
+    gpg --batch --verify telegraf-${TELEGRAF_VERSION}_static_linux_amd64.tar.gz.asc telegraf-${TELEGRAF_VERSION}_static_linux_amd64.tar.gz && \
+    mkdir -p /usr/src /etc/telegraf && \
+    tar -C /usr/src -xzf telegraf-${TELEGRAF_VERSION}_static_linux_amd64.tar.gz && \
+    mv /usr/src/telegraf*/etc/telegraf/telegraf.conf /etc/telegraf/ && \
+    mkdir /etc/telegraf/telegraf.d && \
+    cp -a /usr/src/telegraf*/usr/bin/telegraf /usr/bin/ && \
+    gpgconf --kill all && \
+    rm -rf *.tar.gz* /usr/src /root/.gnupg && \
+    apk del .build-deps && \
+    addgroup -S telegraf && \
+    adduser -S telegraf -G telegraf && \
+    chown -R telegraf:telegraf /etc/telegraf
 
-WORKDIR /build/questdb
+EXPOSE 8125/udp 8092/udp 8094
 
-RUN ../apache-maven-3.6.3/bin/mvn clean package -Djdk.lang.Process.launchMechanism=vfork -DskipTests -P build-web-console,build-binaries,use-built-in-nodejs
-
-WORKDIR /build/questdb/core/target
-
-RUN tar xvfz questdb-*-rt-*.tar.gz
-
-RUN rm questdb-*-rt-*.tar.gz
-
-FROM debian:stretch-slim
-
-WORKDIR /app
-
-COPY --from=0 /build/questdb/core/target/questdb-*-rt-* .
-
-WORKDIR /app/bin
-
-# QuestDB root directory
-RUN mkdir -p /root/.questdb
-
-# Make working folder the quest db folder
-WORKDIR /root/.questdb
-
-# bash prompt
-RUN echo "PS1='🐳  \[\033[1;36m\]\h \[\033[1;34m\]\W\[\033[0;35m\] \[\033[1;36m\]# \[\033[0m\]'" > /root/.bashrc
-
-# Make port 9000 available to the world outside this container
-EXPOSE 9000/tcp
-EXPOSE 8812/tcp
-EXPOSE 9009/tcp
-
-#
-# Run QuestDB when the container launches
-#
-# 'conf/log.conf' is a placeholder, it does not exist out of box
-# which make logger use default configuration. However, when user configures
-# a volume with something like:
-#
-# docker run -v "$(pwd):/root/.questdb/"  questdb/questdb
-#
-# then one can create 'log.conf' in the 'conf' dir and override logger fully
-#
-CMD ["/usr/bin/env", "QDB_PACKAGE=docker", "/app/bin/java", "-Dout=conf/log.conf", "-m", "io.questdb/io.questdb.ServerMain", "-d", "/root/.questdb", "-f"]
+COPY entrypoint.sh /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["telegraf"]
