@@ -2,15 +2,12 @@
 [![Docker Image CI](https://github.com/concept10/c5xb/actions/workflows/docker-image.yml/badge.svg)](https://github.com/concept10/c5xb/actions/workflows/docker-image.yml)
 
 
-## Contributors
 
-[__Contributors__](https://github.com/concept10/c5xb/graphs/contributors)
-
-## License
+License
 
 MIT
 
-## Powered By
+Powered By
 
 
 [ghaction-img]: https://github.com/concept10/exoSCADA/actions/workflows/cppcmake.yml/badge.svg
