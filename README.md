@@ -1,7 +1,4 @@
-# c5xb-init
-c5xb-init
-
-
+# c5xb
 [![Docker Image CI](https://github.com/concept10/c5xb/actions/workflows/docker-image.yml/badge.svg)](https://github.com/concept10/c5xb/actions/workflows/docker-image.yml)
 
 [wiki-img]: https://img.shields.io/badge/docs-Wiki-blue.svg
@@ -18,7 +15,7 @@ c5xb-init
 
 ## License
 
-GPL-2.0
+MIT
 
 ## Powered By
 
