@@ -3,11 +3,11 @@
 
 
 
-License
+License:
 
 MIT
 
-Powered By
+Powered By:
 
 
 [ghaction-img]: https://github.com/concept10/exoSCADA/actions/workflows/cppcmake.yml/badge.svg
