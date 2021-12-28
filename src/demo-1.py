@@ -24,6 +24,12 @@ except:
         logging.error("Pango not found")
         sys.exit(1)
 
+try:
+    from gi.repository import Gtk-4.0 as gtk4
+except:
+    logging.error("Gtk-4.0 not found")
+    sys.exit(1)
+
 if __name__ == '__main__':
     GObject.threads_init()
     Gdk.threads_init()

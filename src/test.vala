@@ -1,4 +1,12 @@
+
+using Cairo as cairo;
+
 using Gtk;
+using Gdk;
+using GObject;
+using GLib;
+
+using GObject.Introspection as introspection;
 
 const version = "0.1.0";
 const round = Math.round;
@@ -16,7 +24,5 @@ enum _Elements {
     ABSTRACT_HAND,
     ABSTRACT_FRAME,
     ABSTRACT_BODY,
-    
-
 };
 
