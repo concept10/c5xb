@@ -1,13 +1,6 @@
 # c5xb
 [![Docker Image CI](https://github.com/concept10/c5xb/actions/workflows/docker-image.yml/badge.svg)](https://github.com/concept10/c5xb/actions/workflows/docker-image.yml)
 
-[wiki-img]: https://img.shields.io/badge/docs-Wiki-blue.svg
-
-[![Wiki][wiki-img]][wiki]
-
-## Wiki
-
-[wiki]: https://github.com/https://github.com/concept10/c5xb/wiki
 
 ## Contributors
 
@@ -19,11 +12,6 @@ MIT
 
 ## Powered By
 
-
-
-
-[wiki-img]: https://img.shields.io/badge/docs-Wiki-blue.svg
-[wiki]: https://github.com/https://github.com/concept10/c5xb/wiki
 
 [ghaction-img]: https://github.com/concept10/exoSCADA/actions/workflows/cppcmake.yml/badge.svg
 [ghaction]: https://github.com//actions/workflows/cppcmake.yml
